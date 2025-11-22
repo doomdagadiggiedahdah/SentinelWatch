@@ -1,0 +1,61 @@
+# Backend - Python
+backend/.venv/
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/.pytest_cache/
+backend/.coverage
+backend/htmlcov/
+backend/dist/
+backend/build/
+backend/*.egg-info/
+backend/.env
+backend/.env.local
+backend/db.sqlite3
+backend/db.sqlite3-journal
+
+# Frontend - Node.js
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+.env
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+__pycache__/
+
+# Project specific
+backend/db.sqlite3
+docs/api-responses.json
