@@ -6,6 +6,7 @@ import { SubmitIncident } from './pages/SubmitIncident';
 import { CampaignList } from './pages/CampaignList';
 import { CampaignDetail } from './pages/CampaignDetail';
 import { AmIAlone } from './pages/AmIAlone';
+import { Analytics } from './pages/Analytics';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,6 +29,7 @@ function App() {
                 <Link to="/" style={linkStyle}>Home</Link>
                 <Link to="/submit" style={linkStyle}>Submit Incident</Link>
                 <Link to="/campaigns" style={linkStyle}>Campaigns</Link>
+                <Link to="/analytics" style={linkStyle}>Analytics</Link>
               </div>
             </nav>
 
@@ -37,6 +39,7 @@ function App() {
                 <Route path="/submit" element={<SubmitIncident />} />
                 <Route path="/campaigns" element={<CampaignList />} />
                 <Route path="/campaigns/:id" element={<CampaignDetail />} />
+                <Route path="/analytics" element={<Analytics />} />
                 <Route path="/alone/:id" element={<AmIAlone />} />
               </Routes>
             </main>

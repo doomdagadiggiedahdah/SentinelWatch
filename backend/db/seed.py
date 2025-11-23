@@ -15,7 +15,8 @@ from datetime import datetime, timedelta
 DEMO_API_KEYS = {
     "org_alice": "alice_key_12345",
     "org_bob": "bob_key_67890",
-    "org_charlie": "charlie_key_11111"
+    "org_charlie": "charlie_key_11111",
+    "org_dave": "dave_key_22222"
 }
 
 DEMO_ORGS = [
@@ -39,6 +40,13 @@ DEMO_ORGS = [
         "sector": SectorEnum.WATER,
         "region": RegionEnum.NA_EAST,
         "api_key": "charlie_key_11111"
+    },
+    {
+        "id": "org_dave",
+        "display_name": "Dave Manufacturing Inc",
+        "sector": SectorEnum.OTHER,
+        "region": RegionEnum.NA_WEST,
+        "api_key": "dave_key_22222"
     }
 ]
 
@@ -47,13 +55,13 @@ DEMO_CAMPAIGNS = [
     {
         "primary_attack_vector": AttackVectorEnum.AI_PHISHING,
         "ai_components": ["llm_content", "email_spoofing"],
-        "sectors": ["health", "finance"],
+        "sectors": ["health", "energy", "water"],
         "regions": ["NA-East", "NA-West"],
         "first_seen": datetime.now() - timedelta(days=5),
         "last_seen": datetime.now() - timedelta(days=1),
-        "num_orgs": 2,
-        "num_incidents": 3,
-        "canonical_summary": "AI-crafted phishing campaign using LLM-generated content targeting healthcare and finance sectors across North America."
+        "num_orgs": 3,
+        "num_incidents": 4,
+        "canonical_summary": "AI-crafted phishing campaign using LLM-generated content targeting critical infrastructure sectors across North America."
     },
     {
         "primary_attack_vector": AttackVectorEnum.DEEPFAKE_VOICE,
@@ -69,13 +77,13 @@ DEMO_CAMPAIGNS = [
     {
         "primary_attack_vector": AttackVectorEnum.LLM_PROMPT_INJECTION,
         "ai_components": ["llm_inference"],
-        "sectors": ["health", "water"],
-        "regions": ["NA-East"],
+        "sectors": ["health", "water", "other"],
+        "regions": ["NA-East", "NA-West"],
         "first_seen": datetime.now() - timedelta(days=2),
         "last_seen": datetime.now(),
-        "num_orgs": 2,
-        "num_incidents": 4,
-        "canonical_summary": "LLM prompt injection attacks observed across critical infrastructure sectors."
+        "num_orgs": 3,
+        "num_incidents": 5,
+        "canonical_summary": "LLM prompt injection attacks observed across critical infrastructure and manufacturing sectors, demonstrating coordinated AI-assisted reconnaissance."
     }
 ]
 
@@ -226,6 +234,39 @@ DEMO_INCIDENTS = [
         ],
         "impact_level": ImpactLevelEnum.HIGH,
         "summary": "Ongoing attacks against water utility AI monitoring systems.",
+        "campaign_id": 3
+    },
+    # Campaign 1 - AI Phishing (org_dave)
+    {
+        "org_id": "org_dave",
+        "local_ref": "MFG-2025-512",
+        "time_start": datetime.now() - timedelta(days=2),
+        "time_end": datetime.now() - timedelta(days=2, hours=-2),
+        "attack_vector": AttackVectorEnum.AI_PHISHING,
+        "ai_components": ["llm_content"],
+        "techniques": ["T1566.002"],
+        "iocs": [
+            {"type": "domain", "value": "procurement-portal-verify.example.com"},
+            {"type": "email", "value": "orders@supplier-confirm.net"}
+        ],
+        "impact_level": ImpactLevelEnum.MEDIUM,
+        "summary": "Manufacturing supply chain staff targeted with AI phishing impersonating supplier order confirmations.",
+        "campaign_id": 1
+    },
+    # Campaign 3 - LLM Prompt Injection (org_dave)
+    {
+        "org_id": "org_dave",
+        "local_ref": "MFG-2025-513",
+        "time_start": datetime.now() - timedelta(days=1, hours=-12),
+        "time_end": datetime.now() - timedelta(days=1, hours=-8),
+        "attack_vector": AttackVectorEnum.LLM_PROMPT_INJECTION,
+        "ai_components": ["llm_inference"],
+        "techniques": ["T1190"],
+        "iocs": [
+            {"type": "url", "value": "production-forecast-ai.internal?override_constraints"}
+        ],
+        "impact_level": ImpactLevelEnum.HIGH,
+        "summary": "Production planning AI system jailbroken to bypass safety limits; attackers explored AI model capabilities.",
         "campaign_id": 3
     }
 ]

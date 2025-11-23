@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSubmitIncident } from '../api/hooks';
+import { useSubmitIncident, useAnalyzeIncident } from '../api/hooks';
 import { AttackVectorEnum, ImpactLevelEnum, IOC } from '../types/api';
 import { OrgSelector } from '../components/OrgSelector';
+import { useOrg } from '../context/OrgContext';
 
 export const SubmitIncident: React.FC = () => {
   const navigate = useNavigate();
   const submitIncident = useSubmitIncident();
+  const analyzeIncident = useAnalyzeIncident();
+  useOrg(); // Ensures org context is available
 
   const [localRef, setLocalRef] = useState('');
   const [timeStart, setTimeStart] = useState('');
@@ -19,6 +22,8 @@ export const SubmitIncident: React.FC = () => {
   const [iocs, setIocs] = useState<IOC[]>([]);
   const [impactLevel, setImpactLevel] = useState<ImpactLevelEnum>(ImpactLevelEnum.MEDIUM);
   const [summary, setSummary] = useState('');
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   const handleAddIoc = () => {
     if (iocType && iocValue) {
@@ -176,6 +181,35 @@ export const SubmitIncident: React.FC = () => {
             style={inputStyle}
             placeholder="Brief summary of the incident..."
           />
+          <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={async () => {
+                setAnalysisError(null);
+                setAnalyzing(true);
+                try {
+                  const res = await analyzeIncident.mutateAsync({ summary });
+                  if (res.success) {
+                    if (res.attack_vector) setAttackVector(res.attack_vector as AttackVectorEnum);
+                    if (res.ai_components) setAiComponents(res.ai_components.join(', '));
+                    if (res.techniques) setTechniques(res.techniques.join(', '));
+                    if (res.suggested_iocs) setIocs(res.suggested_iocs as IOC[]);
+                  } else {
+                    setAnalysisError(res.error || 'Analysis failed');
+                  }
+                } catch (e: any) {
+                  setAnalysisError(e?.message || 'Analysis failed');
+                } finally {
+                  setAnalyzing(false);
+                }
+              }}
+              style={{ ...buttonStyle, backgroundColor: '#444' }}
+              disabled={analyzing}
+            >
+              {analyzing ? 'Analyzing…' : 'Analyze with AI'}
+            </button>
+            {analysisError && <span style={{ color: 'crimson' }}>{analysisError}</span>}
+          </div>
         </div>
 
         <button type="submit" disabled={submitIncident.isPending} style={{ ...buttonStyle, padding: '0.75rem' }}>

@@ -3,6 +3,7 @@ from backend.db.models import Campaign, Incident, Organization
 from datetime import datetime, timedelta
 import hashlib
 from typing import Optional, List
+from backend.services.llm_analysis import generate_campaign_summary
 
 
 def compute_fingerprint(
@@ -130,11 +131,24 @@ def update_campaign_aggregates(db: Session, campaign_id: int):
 
 def generate_canonical_summary(incident: Incident, org: Organization) -> str:
     """
-    Generate a canonical summary for a campaign.
-    For MVP, use a simple template.
+    Generate a canonical summary for a campaign using LLM or template fallback.
     """
-    ai_comps = ", ".join(incident.ai_components) if incident.ai_components else "AI components"
-    return (
-        f"AI-{incident.attack_vector.value} campaign using {ai_comps} "
-        f"observed in {org.sector.value} sector, {org.region.value} region."
-    )
+    # Try LLM-powered summary
+    try:
+        summary = generate_campaign_summary(
+            incident_summaries=[incident.summary],
+            attack_vector=incident.attack_vector.value,
+            ai_components=incident.ai_components,
+            first_seen=incident.time_start,
+            last_seen=incident.time_start,
+            regions=[org.region.value],
+            sectors=[org.sector.value],
+        )
+        return summary
+    except Exception:
+        # Fallback to simple template
+        ai_comps = ", ".join(incident.ai_components) if incident.ai_components else "AI components"
+        return (
+            f"AI-{incident.attack_vector.value} campaign using {ai_comps} "
+            f"observed in {org.sector.value} sector, {org.region.value} region."
+        )

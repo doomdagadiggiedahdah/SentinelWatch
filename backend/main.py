@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.db.session import init_db
-from backend.routers import health, incidents, campaigns
+from backend.routers import health, incidents, campaigns, analytics
 
 # Create FastAPI app
 app = FastAPI(
@@ -28,6 +28,7 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(incidents.router)
 app.include_router(campaigns.router)
+app.include_router(analytics.router)
 
 
 @app.on_event("startup")

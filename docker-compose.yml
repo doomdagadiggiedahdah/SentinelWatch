@@ -12,6 +12,7 @@ services:
     environment:
       - DATABASE_URL=sqlite:////app/backend/data/db.sqlite3
       - PYTHONUNBUFFERED=1
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
     volumes:
       - ./backend/data:/app/backend/data
     networks:
