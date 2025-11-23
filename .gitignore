@@ -59,3 +59,4 @@ __pycache__/
 # Project specific
 backend/db.sqlite3
 docs/api-responses.json
+struct-trans-landing-key.pem
