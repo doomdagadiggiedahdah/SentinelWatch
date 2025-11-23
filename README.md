@@ -2,7 +2,53 @@
 
 A **minimal but real** system where multiple organizations can submit structured incident reports about **AI-enabled attacks** and see **aggregated, anonymized campaigns** across orgs – without exposing which specific orgs got hit or sharing raw logs.
 
-## Quick Start
+## Quick Start (Docker)
+
+### Prerequisites
+
+- Docker
+- Docker Compose
+
+### Installation & Setup
+
+1. **Install Docker and Docker Compose (if not already installed):**
+   ```bash
+   ./install-docker.sh
+   ```
+
+2. **Start the application:**
+   ```bash
+   ./docker-start.sh up
+   ```
+
+3. **Access the application:**
+   - **Frontend:** http://localhost:3165
+   - **Backend API:** http://localhost:8000
+   - **API Docs:** http://localhost:8000/docs
+
+### Demo Organizations
+
+Pre-seeded demo organizations with API keys:
+- `org_alice` (Alice Hospital) - API Key: `alice_key_12345`
+- `org_bob` (Bob Energy Corp) - API Key: `bob_key_67890`
+- `org_charlie` (Charlie Water Utility) - API Key: `charlie_key_11111`
+
+### Common Commands
+
+```bash
+./docker-start.sh up         # Start all services
+./docker-start.sh down       # Stop all services
+./docker-start.sh logs       # View logs
+./docker-start.sh rebuild    # Rebuild Docker images
+./docker-start.sh clean      # Remove all containers and volumes
+./docker-start.sh ps         # Show running services
+./docker-start.sh restart    # Restart services
+./docker-start.sh test       # Run tests
+```
+
+## Development (Local Setup)
+
+If you prefer to run services locally without Docker:
 
 ### Prerequisites
 
@@ -22,11 +68,6 @@ A **minimal but real** system where multiple organizations can submit structured
    ```bash
    python -m backend.db.seed
    ```
-
-   This creates 3 demo organizations:
-   - `org_alice` (Alice Hospital) - API Key: `alice_key_12345`
-   - `org_bob` (Bob Energy Corp) - API Key: `bob_key_67890`
-   - `org_charlie` (Charlie Water Utility) - API Key: `charlie_key_11111`
 
 3. **Run the backend server:**
    ```bash
@@ -128,6 +169,24 @@ npm test
 - **State Management:**
   - React Query for server state
   - Context API for current org (demo)
+
+## Docker Compose Services
+
+### Backend Service
+- **Image:** Built from `backend/Dockerfile`
+- **Port:** 8000 (accessible at http://localhost:8000)
+- **Database:** SQLite at `/app/backend/db.sqlite3`
+- **Volumes:** Persists data and database between restarts
+- **Health Check:** HTTP GET to `/health` endpoint
+
+### Frontend Service
+- **Image:** Built from `frontend/Dockerfile`
+- **Port:** 3165 (mapped from 3000 internally)
+- **Environment:** `VITE_API_BASE_URL=http://localhost:8000`
+- **Dependencies:** Waits for backend to be healthy before starting
+- **Health Check:** HTTP GET to internal port 3000
+
+Both services run on a `sentinelnet` bridge network and restart automatically unless stopped.
 
 ## Privacy Mechanisms
 
