@@ -46,6 +46,16 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         echo "⚠️  Please log out and log back in, or run: newgrp docker"
     fi
     
+    # Check if nginx is installed
+    if command -v nginx &> /dev/null; then
+        echo "✅ Nginx is already installed: $(nginx -v 2>&1)"
+    else
+        echo "📥 Installing Nginx..."
+        sudo apt-get update
+        sudo apt-get install -y nginx
+        echo "✅ Nginx installed successfully"
+    fi
+    
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     # macOS
     echo "📦 Detected macOS"
@@ -59,6 +69,9 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
         exit 1
     fi
     
+    # Note: Nginx is typically not needed on macOS for development
+    echo "ℹ️  Nginx is optional on macOS (use for production setups)"
+    
 else
     echo "❌ Unsupported OS: $OSTYPE"
     echo "Please install Docker manually from https://docs.docker.com/get-docker/"
@@ -70,6 +83,15 @@ echo ""
 echo "🔍 Verifying installation..."
 docker --version
 docker-compose --version
+nginx -v
 
 echo ""
-echo "✅ All set! You can now run: ./docker-start.sh up"
+echo "✅ All dependencies installed!"
+echo ""
+echo "📝 Next steps:"
+echo "  1. If you added the docker group, log out and back in"
+echo "  2. Run: ./docker-start.sh up"
+echo "  3. For production with a domain, configure nginx:"
+echo "     - Edit /etc/nginx/sites-available/sentinelwatch"
+echo "     - Update server_name with your domain"
+echo "     - Run: sudo systemctl restart nginx"
