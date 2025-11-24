@@ -109,3 +109,75 @@ class CampaignFilters(BaseModel):
     attack_vector: Optional[AttackVectorEnum] = None
     since: Optional[datetime] = None
     until: Optional[datetime] = None
+
+
+# Org profile schemas
+class OrgProfileUpdate(BaseModel):
+    org_size: Optional[str] = None
+    primary_systems: Optional[List[str]] = None
+    ai_systems_in_use: Optional[List[str]] = None
+    mfa_enabled: Optional[str] = None
+    siem_platform: Optional[str] = None
+    security_training_frequency: Optional[str] = None
+    phishing_simulations: Optional[str] = None
+    incident_response_plan: Optional[str] = None
+
+
+# Risk assessment schemas
+class ThreatCard(BaseModel):
+    threat_id: str
+    threat_name: str
+    attack_vector: str
+    evidence: Dict[str, Any]
+    exposure: Dict[str, Any]
+    likelihood: str
+    likelihood_percentage: float
+    estimated_impact: Dict[str, float]
+    reasoning: str
+    risk_score: float
+
+
+class RiskAssessmentResponse(BaseModel):
+    assessed_at: str
+    org_id: str
+    relevant_incidents_count: int
+    high_risk: List[ThreatCard]
+    medium_risk: List[ThreatCard]
+    low_risk: List[ThreatCard]
+
+
+class PlaybookGenerateRequest(BaseModel):
+    threat_id: str
+    attack_vector: str
+
+
+class PlaybookResponse(BaseModel):
+    playbook_type: str
+    threat_name: str
+    full_text: str
+
+
+# Threat research schemas
+class ThreatResearchRequest(BaseModel):
+    org_description: str = Field(..., min_length=50, max_length=2000)
+
+
+class VulnerabilityResponse(BaseModel):
+    name: str
+    risk_level: str
+    why_vulnerable: List[str]
+    likelihood_percentage: float
+    estimated_impact_min: float
+    estimated_impact_max: float
+    defense_plan: str
+
+
+class ThreatResearchResponse(BaseModel):
+    report_id: str
+    generated_at: str
+    org_description: str
+    extracted_profile: Dict[str, Any]
+    vulnerabilities: List[VulnerabilityResponse]
+    executive_summary: Dict[str, int]
+    search_queries: List[str]
+    sources_analyzed: int

@@ -50,8 +50,20 @@ class Organization(Base):
     api_key_hash = Column(String, nullable=False, unique=True)
     query_budget = Column(Integer, nullable=False, default=100)
     budget_reset_at = Column(DateTime, nullable=False)
+    # Profile fields for predictive risk assessment
+    org_size = Column(String, nullable=True)  # e.g., "500-1000"
+    primary_systems = Column(JSON, nullable=True, default=list)  # array of systems
+    ai_systems_in_use = Column(JSON, nullable=True, default=list)  # array of AI tools
+    mfa_enabled = Column(String, nullable=True)  # "all_users" | "admins_only" | "none"
+    siem_platform = Column(String, nullable=True)  # e.g., "splunk", "elastic", "none"
+    security_training_frequency = Column(String, nullable=True)  # e.g., "monthly", "quarterly", "none"
+    phishing_simulations = Column(String, nullable=True)  # "regular" | "occasional" | "never"
+    incident_response_plan = Column(String, nullable=True)  # "tested" | "documented" | "none"
+    profile_completed_at = Column(DateTime, nullable=True)
 
     incidents = relationship("Incident", back_populates="organization")
+    risk_assessments = relationship("RiskAssessment", back_populates="organization")
+    threat_research_reports = relationship("ThreatResearchReport", back_populates="organization")
 
 
 class Campaign(Base):
@@ -106,3 +118,54 @@ class AuditLog(Base):
     details = Column(JSON, nullable=True)  # filters, IDs, etc.
     result_count = Column(Integer, nullable=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+
+class RiskAssessment(Base):
+    __tablename__ = "risk_assessments"
+
+    id = Column(String, primary_key=True)
+    org_id = Column(String, ForeignKey("organizations.id"), nullable=False)
+    assessed_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    relevant_incidents_count = Column(Integer, nullable=False, default=0)
+    high_risk_threats = Column(JSON, nullable=False, default=list)
+    medium_risk_threats = Column(JSON, nullable=False, default=list)
+    low_risk_threats = Column(JSON, nullable=False, default=list)
+    valid_until = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+    organization = relationship("Organization", back_populates="risk_assessments")
+
+
+class PreventivePlaybook(Base):
+    __tablename__ = "preventive_playbooks"
+
+    id = Column(String, primary_key=True)
+    org_id = Column(String, ForeignKey("organizations.id"), nullable=False)
+    threat_id = Column(String, nullable=False)
+    attack_vector = Column(String, nullable=False)
+    playbook_sections = Column(JSON, nullable=False, default=dict)
+    full_text = Column(Text, nullable=True)
+    metadata = Column(JSON, nullable=True)
+    generated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+    organization = relationship("Organization")
+
+
+class ThreatResearchReport(Base):
+    __tablename__ = "threat_research_reports"
+
+    id = Column(String, primary_key=True)
+    org_id = Column(String, ForeignKey("organizations.id"), nullable=False)
+    org_description = Column(Text, nullable=False)
+    org_description_hash = Column(String, nullable=False, index=True)
+    extracted_profile = Column(JSON, nullable=True)
+    generated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    search_queries = Column(JSON, nullable=True)
+    sources_analyzed = Column(Integer, nullable=True)
+    vulnerabilities = Column(JSON, nullable=False, default=list)
+    executive_summary = Column(JSON, nullable=True)
+    cached_until = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+    organization = relationship("Organization", back_populates="threat_research_reports")

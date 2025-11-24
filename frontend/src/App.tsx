@@ -7,6 +7,8 @@ import { CampaignList } from './pages/CampaignList';
 import { CampaignDetail } from './pages/CampaignDetail';
 import { AmIAlone } from './pages/AmIAlone';
 import { Analytics } from './pages/Analytics';
+import { RiskAssessment } from './pages/RiskAssessment';
+import { ThreatResearch } from './pages/ThreatResearch';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,6 +31,8 @@ function App() {
                 <Link to="/" style={linkStyle}>Home</Link>
                 <Link to="/submit" style={linkStyle}>Submit Incident</Link>
                 <Link to="/campaigns" style={linkStyle}>Campaigns</Link>
+                <Link to="/risk-assessment" style={linkStyle}>Risk Assessment</Link>
+                <Link to="/threat-research" style={linkStyle}>Threat Research</Link>
                 <Link to="/analytics" style={linkStyle}>Analytics</Link>
               </div>
             </nav>
@@ -39,6 +43,8 @@ function App() {
                 <Route path="/submit" element={<SubmitIncident />} />
                 <Route path="/campaigns" element={<CampaignList />} />
                 <Route path="/campaigns/:id" element={<CampaignDetail />} />
+                <Route path="/risk-assessment" element={<RiskAssessment />} />
+                <Route path="/threat-research" element={<ThreatResearch />} />
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/alone/:id" element={<AmIAlone />} />
               </Routes>
